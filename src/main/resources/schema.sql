@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS ORDERS;
+  
+CREATE TABLE ORDERS (
+  OID INT AUTO_INCREMENT PRIMARY KEY,
+  customer_name VARCHAR(50) NOT NULL,
+  order_date date NOT NULL,
+  shipping_address VARCHAR(50) NOT NULL,
+  total int NOT NULL
+);
