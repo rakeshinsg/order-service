@@ -6,9 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rak.order.domain.Order;
@@ -31,7 +30,7 @@ public class OrderServiceController {
 	@Autowired
 	private OrderHelper orderHelper;
 	
-	@RequestMapping(value = "/createOrder", method = RequestMethod.POST)
+	@PostMapping("/createOrder")
 	public String createOrder(@RequestBody OrderTo orderTo) throws OrderNotFoundException {
 		if(orderTo != null && orderTo.getOrderItemTos() != null && orderTo.getOrderItemTos().size() > 0) {
 			return orderItemService.createOrderItems(orderHelper.fromOrderTo(orderTo, service.createOrder(orderTo).getOid()));
@@ -39,9 +38,10 @@ public class OrderServiceController {
 		return "Requested data is not valid";
 	}
 	
-	@RequestMapping(value = "/getOrder/{orderId}")
+	@GetMapping("/getOrder/{orderId}")
 	public OrderTo getOrderByOrderId(@PathVariable long orderId) throws OrderNotFoundException {
 		Order order = service.retrieveOrder(orderId);
+		System.out.println("getOrderByOrderId:"+order);
 		List<OrderItemTo> orderItemTos = orderItemService.retrieveOrderItem(orderId);
 		if(order != null && orderItemTos != null && orderItemTos.size() > 0) {
 			return orderHelper.fromOrder(order, orderItemTos);

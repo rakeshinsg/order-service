@@ -63,6 +63,11 @@ public class Order {
 	public void setOid(long oid) {
 		this.oid = oid;
 	}
+	@Override
+	public String toString() {
+		return "Order [oid=" + oid + ", customerName=" + customerName + ", orderDate=" + orderDate
+				+ ", shippingAddress=" + shippingAddress + ", total=" + total + "]";
+	}
 	
 	
 }
