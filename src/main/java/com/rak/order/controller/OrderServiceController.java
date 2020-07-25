@@ -1,5 +1,6 @@
 package com.rak.order.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rak.order.domain.Order;
+import com.rak.order.exception.ConnectionException;
 import com.rak.order.exception.OrderNotFoundException;
 import com.rak.order.helper.OrderHelper;
 import com.rak.order.helper.OrderItemTo;
@@ -39,15 +41,20 @@ public class OrderServiceController {
 	}
 	
 	@GetMapping("/getOrder/{orderId}")
-	public OrderTo getOrderByOrderId(@PathVariable long orderId) throws OrderNotFoundException {
+	public OrderTo getOrderByOrderId(@PathVariable long orderId) throws Exception {
 		Order order = service.retrieveOrder(orderId);
 		System.out.println("getOrderByOrderId:"+order);
-		List<OrderItemTo> orderItemTos = orderItemService.retrieveOrderItem(orderId);
-		if(order != null && orderItemTos != null && orderItemTos.size() > 0) {
-			return orderHelper.fromOrder(order, orderItemTos);
-		} else {
-			throw new OrderNotFoundException("Order id is invalid");
+		try {
+			List<OrderItemTo> orderItemTos = orderItemService.retrieveOrderItem(orderId);
+			if(order != null && orderItemTos != null && orderItemTos.size() > 0) {
+				return orderHelper.fromOrder(order, orderItemTos);
+			} else {
+				throw new OrderNotFoundException("Order id is invalid");
+			}
+		}catch(Exception e) {
+			throw new ConnectionException("Connection is closed");
 		}
+		
 	}
 	
 	@GetMapping("/test")
@@ -57,5 +64,16 @@ public class OrderServiceController {
 		ac.add(new OrderItemTo("M101", "Mobie", 1, 11));
 		ord.setOrderItemTos(ac);
 		return ord;
+	}
+	
+	@GetMapping(value = "/getOrder")
+	public OrderTo createOrder() throws OrderNotFoundException {
+		System.out.println("getOrder--->");
+		List<OrderItemTo> orderItemTos = new ArrayList<>();
+		orderItemTos.add(new OrderItemTo("1200", "Mythene", 100,100));
+		LocalDate orderDate = LocalDate.now();
+		OrderTo order = new OrderTo("Rakesh", orderDate, "Sinapore", orderItemTos, 10);
+		
+		return order;
 	}
 }
